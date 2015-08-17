@@ -5,6 +5,14 @@ fi
 
 set -x -e
 
+if [ $# -ge 1 ]; then
+  if [ $1 = "debug" ]; then
+    echo "Setting debug flags"
+    DEBUG=debug
+    LIBSNARK_FLAGS="$LIBSNARK_FLAGS DEBUG=1"
+  fi
+fi
+
 DEPSRC=./depsrc
 DEPINST=./depinst
 
@@ -14,11 +22,11 @@ DEPINST=`pwd -P`/$DEPINST  # remember absolute path
 mkdir -p $DEPSRC
 cd $DEPSRC
 
-[ ! -d libsnark ] && git clone https://github.com/scipr-lab/libsnark libsnark
+[ ! -d libsnark ] && git clone https://github.com/marmolejo/libsnark libsnark
 cd libsnark
 git pull
 # TODO: submit -fPIC patch to ate-pairing
-INC_DIR=-fPIC ./prepare-depends.sh
+INC_DIR=-fPIC ./prepare-depends.sh $DEBUG
 make clean
 make $LIBSNARK_FLAGS
 make install PREFIX=$DEPINST $LIBSNARK_FLAGS
